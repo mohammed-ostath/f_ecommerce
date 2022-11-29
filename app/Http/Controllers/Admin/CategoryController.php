@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\File;
+
+// use Illuminate\Support\Facades\File;
 
 class CategoryController extends Controller
 {
@@ -15,7 +18,7 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $categories = Category::orderByDesc('id')->paginate(10);
+        $categories = Category::orderByDesc('id')->whereNull('parent_id')->paginate(10);
         return view('admin.categories.index', compact('categories'));
     }
 
@@ -26,7 +29,7 @@ class CategoryController extends Controller
      */
     public function create()
     {
-        $categories = Category::all();
+        $categories = Category::whereNull('parent_id')->get();
         return view('admin.categories.create', compact('categories'));
     }
 
@@ -109,6 +112,11 @@ class CategoryController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $category = Category::findOrFail($id);
+        File::delete('uploads/categories/'.$category->image);
+        Category::where('parent_id',$id)->update(['parent_id' => 1]);
+        $category->delete();
+         //redirect
+         return redirect()->route('admin.categories.index')->with('msg', 'Category deleted successfully')->with('type', 'dander');
     }
 }

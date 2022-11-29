@@ -2,9 +2,10 @@
 @section('title', 'Create New Category | ' . env('APP_NAME'))
 @section('content')
     <!-- Page Heading -->
+    @include('admin.errors')
     <h1 class="h3 mb-4 text-gray-800">Add Category</h1>
     @include('admin.errors')
-    <form action="{{ route('admin.categories.store') }}" method="POST">
+    <form action="{{ route('admin.categories.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
 
         <div class="row">
@@ -34,7 +35,7 @@
                     <select name="parant_id" class="form-control">
                         <option value="">--Select--</option>
                         @foreach ($categories as $category)
-                            <option value="{{ $category->id }}"> {{ $category->name_en }}</option>
+                            <option value="{{ $category->id }}" {{ $category->name_en }}> </option>
                         @endforeach
                     </select>
                 </div>
